@@ -243,7 +243,7 @@ class StyleViewController: UIViewController, UICollectionViewDataSource, UIColle
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         self.performSegueWithIdentifier(PRODUCT_DETAIL_SEGUE, sender: products[indexPath.row])
     }
     
