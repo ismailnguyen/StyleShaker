@@ -40,6 +40,16 @@ class StyleViewController: UIViewController, UICollectionViewDataSource, UIColle
         if (self.products.count > 10) {
             self.products.removeRange(9..<self.products.count-1)
         }
+        
+        if (products.count == 0) {
+            let noContentAlert = UIAlertController(title: "Error", message: "No products was found.", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            noContentAlert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: { (action: UIAlertAction!) in
+                self.navigationController?.popViewControllerAnimated(true)
+            }))
+            
+            presentViewController(noContentAlert, animated: true, completion: nil)
+        }
     }
     
     // If user has hair preferences, check if product hair details matches with user's
@@ -129,6 +139,21 @@ class StyleViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
     
     private func loadProducts() -> Void {
+    
+        if (Reachability.isConnectedToNetwork()) {
+            loadProductsFromNetwork()
+        }
+        
+        loadProductsFromLocal()
+        
+        dispatch_async(dispatch_get_main_queue(), {
+            self.filterProducts()
+            
+            self.collectionView.reloadData()
+        })
+    }
+    
+    private func loadProductsFromNetwork() -> Void {
         let requestUrl: NSURL = NSURL(string: PRODUCTS_URL)!
         let request : NSMutableURLRequest = NSMutableURLRequest(URL: requestUrl)
         let session = NSURLSession.sharedSession()
@@ -142,91 +167,131 @@ class StyleViewController: UIViewController, UICollectionViewDataSource, UIColle
             if (statusCode == 200) {
                 print("Site available, downloading datas baby")
                 
-                do {
-                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)
-                    for item in json as! [[String: AnyObject]] {
-                        
-                        var criteria : Criteria = Criteria()
-                        
-                        // criterias
-                        if let criteriaNode  = item["criteria"] as? [String: AnyObject] {
-                            var mood : Mood = Mood()
-                            var gender : Gender = Gender()
-                            var skin : Skin = Skin()
-                            var hair : Hair = Hair()
-                            
-                            // mood
-                            if let moodNode = criteriaNode["mood"] as? [String : AnyObject] {
-                                let moodParty = moodNode["party"] as! Bool
-                                let moodWeekend = moodNode["weekend"] as! Bool
-                                let moodChill = moodNode["chill"] as! Bool
-                                let moodWork = moodNode["work"] as! Bool
-                                
-                                mood = Mood(party: moodParty, weekend: moodWeekend, chill: moodChill, work: moodWork)
-                            }
-                            
-                            // gender
-                            if let genderNode = criteriaNode["gender"] as? [String : AnyObject] {
-                                let genderMale = genderNode["male"] as! Bool
-                                let genderFemale = genderNode["female"] as! Bool
-                                
-                                gender = Gender(female: genderMale, male: genderFemale)
-                            }
-                            
-                            // skin
-                            if let skinNode = criteriaNode["skin"] as? [String : AnyObject] {
-                                let skinBright = skinNode["bright"] as! Bool
-                                let skinDark = skinNode["dark"] as! Bool
-                                
-                                hair = Hair(dark: skinBright, bright: skinDark)
-                            }
-                            
-                            // hair
-                            if let hairNode = criteriaNode["hair"] as? [String : AnyObject] {
-                                let hairBight = hairNode["bright"] as! Bool
-                                let hairDark = hairNode["dark"] as! Bool
-                                
-                                skin = Skin(dark: hairBight, bright: hairDark)
-                            }
-                            
-                            criteria = Criteria(mood: mood, gender: gender, hair: hair, skin: skin)
-                        }
-
-                        let product: Product = Product(
-                            id: item["id"] as? String,
-                            title: item["title"] as? String,
-                            about: item["about"] as? String,
-                            picture: item["picture"] as? String,
-                            tags: item["tags"] as? [String],
-                            criteria: criteria
-                        )
-                        
-                        // If user has preferences and product matches to that, get it
-                        if (self.matchGender((product.criteria?.gender)!) == true
-                            && self.matchHair((product.criteria?.hair)!) == true
-                            && self.matchSkin((product.criteria?.skin)!) == true
-                            && self.matchMood((product.criteria?.mood)!) == true) {
-                                
-                            product.pictureImage = self.downloadImage(product.picture!)
-                            
-                            self.products.append(product)
-                            print("product was added")
-                        }
-                    }
+                let userDefaults = NSUserDefaults.standardUserDefaults()
+                userDefaults.setObject(data, forKey: "products")
+                
+                self.products = self.parseJson(data!)
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.filterProducts()
                     
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.filterProducts()
-                        
-                        self.collectionView.reloadData()
-                    })
-                }
-                catch {
-                    print("Hmm sorry buddy, an error occured during json retrieving")
-                }
+                    self.collectionView.reloadData()
+                })
             }
         }
         
         task.resume()
+    }
+    
+    private func loadProductsFromLocal() -> Void {
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        
+        let data = userDefaults.objectForKey("products")! as! NSData
+        
+        self.products = parseJson(data)
+        
+        dispatch_async(dispatch_get_main_queue(), {
+            self.filterProducts()
+            
+            self.collectionView.reloadData()
+        })
+    }
+    
+    private func parseJson(data: NSData) -> [Product] {
+        var parsedProducts : [Product] = [Product]()
+        
+        do {
+            let json = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            
+            for item in json as! [[String:AnyObject]] {
+                
+                var criteria : Criteria = Criteria()
+                
+                // criterias
+                if let criteriaNode  = item["criteria"] as? [String: AnyObject] {
+                    var mood : Mood = Mood()
+                    var gender : Gender = Gender()
+                    var skin : Skin = Skin()
+                    var hair : Hair = Hair()
+                    
+                    // mood
+                    if let moodNode = criteriaNode["mood"] as? [String : AnyObject] {
+                        let moodParty = moodNode["party"] as! Bool
+                        let moodWeekend = moodNode["weekend"] as! Bool
+                        let moodChill = moodNode["chill"] as! Bool
+                        let moodWork = moodNode["work"] as! Bool
+                        
+                        mood = Mood(party: moodParty, weekend: moodWeekend, chill: moodChill, work: moodWork)
+                    }
+                    
+                    // gender
+                    if let genderNode = criteriaNode["gender"] as? [String : AnyObject] {
+                        let genderMale = genderNode["male"] as! Bool
+                        let genderFemale = genderNode["female"] as! Bool
+                        
+                        gender = Gender(female: genderMale, male: genderFemale)
+                    }
+                    
+                    // skin
+                    if let skinNode = criteriaNode["skin"] as? [String : AnyObject] {
+                        let skinBright = skinNode["bright"] as! Bool
+                        let skinDark = skinNode["dark"] as! Bool
+                        
+                        hair = Hair(dark: skinBright, bright: skinDark)
+                    }
+                    
+                    // hair
+                    if let hairNode = criteriaNode["hair"] as? [String : AnyObject] {
+                        let hairBight = hairNode["bright"] as! Bool
+                        let hairDark = hairNode["dark"] as! Bool
+                        
+                        skin = Skin(dark: hairBight, bright: hairDark)
+                    }
+                    
+                    criteria = Criteria(mood: mood, gender: gender, hair: hair, skin: skin)
+                }
+                
+                let product: Product = Product(
+                    id: item["id"] as? String,
+                    title: item["title"] as? String,
+                    about: item["about"] as? String,
+                    picture: item["picture"] as? String,
+                    tags: item["tags"] as? [String],
+                    criteria: criteria
+                )
+                
+                // If user has preferences and product matches to that, get it
+                if (self.matchGender((product.criteria?.gender)!) == true
+                    && self.matchHair((product.criteria?.hair)!) == true
+                    && self.matchSkin((product.criteria?.skin)!) == true
+                    && self.matchMood((product.criteria?.mood)!) == true) {
+                        
+                        product.pictureImage = self.downloadImage(product.picture!)
+                        
+                        parsedProducts.append(product)
+                        print("product was added")
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.filterProducts()
+                    
+                    self.collectionView.reloadData()
+                })
+            }
+        }
+        catch {
+            print("Hmm sorry buddy, an error occured during retrieving products from json")
+        }
+        
+        self.products = parsedProducts
+        
+        dispatch_async(dispatch_get_main_queue(), {
+            self.filterProducts()
+            
+            self.collectionView.reloadData()
+        })
+        
+        return parsedProducts
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -258,7 +323,7 @@ class StyleViewController: UIViewController, UICollectionViewDataSource, UIColle
         }
     }
     
-    func downloadImage(link: String) -> UIImage {
+    private func downloadImage(link: String) -> UIImage {
         return UIImage(data: NSData(contentsOfURL: NSURL(string: link)!)!)!
     }
 }

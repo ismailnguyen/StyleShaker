@@ -25,6 +25,8 @@ class MoodTableViewCell: UITableViewCell {
         else if (choiceLabel.text == "CHILL") {
             User.sharedInstance.getCriteria().mood?.chill = choice.on
         }
+        
+        User.sharedInstance.save()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

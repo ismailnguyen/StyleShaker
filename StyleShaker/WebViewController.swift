@@ -9,6 +9,8 @@ class WebViewController: UIViewController, UIWebViewDelegate {
         super.viewDidLoad()
         
         self.webview.delegate = self
+        
+        checkNetwork()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -17,6 +19,18 @@ class WebViewController: UIViewController, UIWebViewDelegate {
             
             let request: NSURLRequest = NSURLRequest(URL: NSURL(string: url)!)
             self.webview.loadRequest(request)
+        }
+    }
+    
+    func checkNetwork() -> Void {
+        if (!Reachability.isConnectedToNetwork()) {
+            let noNetworkAlert = UIAlertController(title: "Error", message: "Network connection not available.", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            noNetworkAlert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: { (action: UIAlertAction!) in
+                self.navigationController?.popViewControllerAnimated(true)
+            }))
+            
+            presentViewController(noNetworkAlert, animated: true, completion: nil)
         }
     }
     

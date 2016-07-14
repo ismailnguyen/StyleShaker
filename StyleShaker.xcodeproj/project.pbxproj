@@ -28,6 +28,7 @@
 		EC7430451D09818E005102CF /* Gender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7430431D09818E005102CF /* Gender.swift */; };
 		EC7430491D098198005102CF /* Skin.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7430471D098198005102CF /* Skin.swift */; };
 		EC74304D1D098242005102CF /* Hair.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC74304B1D098242005102CF /* Hair.swift */; };
+		ECA726F81D36A1EA00A4DB49 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA726F71D36A1EA00A4DB49 /* Reachability.swift */; };
 		ECB585C01D22E6F600DC280F /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB585BF1D22E6F600DC280F /* InfoViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		EC7430431D09818E005102CF /* Gender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gender.swift; sourceTree = "<group>"; };
 		EC7430471D098198005102CF /* Skin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Skin.swift; sourceTree = "<group>"; };
 		EC74304B1D098242005102CF /* Hair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hair.swift; sourceTree = "<group>"; };
+		ECA726F71D36A1EA00A4DB49 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		ECB585BF1D22E6F600DC280F /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,6 +90,7 @@
 		EC01B7761D05C79A00279467 /* StyleShaker */ = {
 			isa = PBXGroup;
 			children = (
+				ECA726F61D36A1CC00A4DB49 /* Utils */,
 				EC7430311D097375005102CF /* Services */,
 				EC01B78F1D05D42300279467 /* Controllers */,
 				EC01B78E1D05D40E00279467 /* Views */,
@@ -153,6 +156,14 @@
 				EC74304B1D098242005102CF /* Hair.swift */,
 			);
 			name = Criterias;
+			sourceTree = "<group>";
+		};
+		ECA726F61D36A1CC00A4DB49 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				ECA726F71D36A1EA00A4DB49 /* Reachability.swift */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -244,6 +255,7 @@
 				EC7430231D0963F4005102CF /* MoodTableViewCell.swift in Sources */,
 				EC74304D1D098242005102CF /* Hair.swift in Sources */,
 				EC7430201D095AD3005102CF /* MoodViewController.swift in Sources */,
+				ECA726F81D36A1EA00A4DB49 /* Reachability.swift in Sources */,
 				EC74302F1D09736B005102CF /* ProductService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

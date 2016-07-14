@@ -43,6 +43,9 @@ class MeViewController: UIViewController, UITableViewDataSource {
                     cell.choiceLeft.layer.borderWidth = 1
                 }
             }
+            else {
+                cell.choice.setOn(false, animated: false)
+            }
             
             cell.choiceLeft.setTitle("Clair", forState: UIControlState.Normal)
             cell.choiceRight.setTitle("Foncé", forState: UIControlState.Normal)
@@ -60,6 +63,9 @@ class MeViewController: UIViewController, UITableViewDataSource {
                     cell.choiceLeft.layer.borderWidth = 1
                 }
             }
+            else {
+                cell.choice.setOn(false, animated: false)
+            }
             
             cell.choiceLeft.setTitle("Clair", forState: UIControlState.Normal)
             cell.choiceRight.setTitle("Foncé", forState: UIControlState.Normal)
@@ -76,6 +82,9 @@ class MeViewController: UIViewController, UITableViewDataSource {
                 else if (User.sharedInstance.getCriteria().gender?.male == true) {
                     cell.choiceLeft.layer.borderWidth = 1
                 }
+            }
+            else {
+                cell.choice.setOn(false, animated: false)
             }
             
             cell.choiceLeft.setTitle("Masculin", forState: UIControlState.Normal)

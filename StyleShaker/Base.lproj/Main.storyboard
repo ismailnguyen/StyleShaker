@@ -817,6 +817,9 @@
                     </view>
                     <navigationItem key="navigationItem" title="Style Shaker" id="LTc-zn-4Pt"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="easter" destination="mtH-A8-cKh" id="5k1-ei-FZG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kzl-fR-8d6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -824,6 +827,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="tf6-rx-tFS"/>
+        <segue reference="1oP-1G-p1O"/>
     </inferredMetricsTieBreakers>
 </document>

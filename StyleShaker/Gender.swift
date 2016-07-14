@@ -1,6 +1,6 @@
 import UIKit
 
-class Gender: NSObject {
+class Gender : NSObject {
     
     var female: Bool = false
     var male: Bool = true

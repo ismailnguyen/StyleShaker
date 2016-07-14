@@ -34,6 +34,8 @@ class BodyTableViewCell: UITableViewCell {
         // Update border of current button and disable other side one
         choiceLeft.layer.borderWidth = 1
         choiceRight.layer.borderWidth = 0
+        
+        User.sharedInstance.save()
     }
 
     // Right side choices
@@ -59,6 +61,8 @@ class BodyTableViewCell: UITableViewCell {
         // Update border of current button and disable other side one
         choiceRight.layer.borderWidth = 1
         choiceLeft.layer.borderWidth = 0
+        
+        User.sharedInstance.save()
     }
     
     // Enable/Disable choices
@@ -119,6 +123,8 @@ class BodyTableViewCell: UITableViewCell {
             choiceRight.layer.borderWidth = 0
             choiceLeft.layer.borderWidth = 0
         }
+        
+        User.sharedInstance.save()
     }
     
     override func setSelected(selected: Bool, animated: Bool) {
